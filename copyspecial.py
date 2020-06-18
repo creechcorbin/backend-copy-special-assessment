@@ -7,7 +7,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 
 # give credits
-__author__ = "???"
+__author__ = "Corbin Creech"
 
 import re
 import os
@@ -17,20 +17,38 @@ import subprocess
 import argparse
 
 
+
 def get_special_paths(dirname):
-    """Given a dirname, returns a list of all its special files."""
-    # your code here
-    return
+    # Produces a list of files that contain the pattern 
+    # and prints them on their own lines
+    path_list = []
+    pattern = re.compile(r'__\w+__')
+    for path in os.listdir(dirname):
+        full_path = os.path.abspath(path)
+        if pattern.search(full_path):
+            path_list.append(full_path)
+    print(path_list)
+    return '\n'.join(path_list)
 
 
 def copy_to(path_list, dest_dir):
-    # your code here
-    return
+    # Creates a new named directory and copies the files 
+    # in the file list to the new directory
+    os.makedirs(dest_dir)
+    for files in path_list:
+        shutil.copy(files, dest_dir)
 
 
 def zip_to(path_list, dest_zip):
-    # your code here
-    return
+    # Zips the files in path_list into a new .zip folder
+    abspaths = '\n'.join(path_list)
+    print(
+        """Command im going to do:
+        zip -j """ + dest_zip + ' ' + abspaths
+    )
+    for path in path_list:
+        subprocess.Popen(['zip', '-j', dest_zip, path])
+    
 
 
 def main(args):
@@ -39,6 +57,7 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
+    parser.add_argument('--from_dir', help='name of dir to search')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
 
@@ -50,7 +69,20 @@ def main(args):
     # any required args, the general rule is to print a usage message and
     # exit(1).
 
-    # Your code here: Invoke (call) your functions
+    from_dir = ns.from_dir
+    to_dir = ns.todir
+    to_zip = ns.tozip
+
+    if from_dir:
+        path_list = get_special_paths(from_dir)
+    elif to_dir:
+        path_list = get_special_paths(from_dir).split('\n')
+        copy_to(path_list, to_dir)
+    elif to_zip:
+        path_list = get_special_paths(from_dir).split('\n')
+        zip_to(path_list, to_zip)
+    
+
 
 
 if __name__ == "__main__":
