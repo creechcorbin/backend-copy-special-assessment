@@ -73,14 +73,14 @@ def main(args):
     to_dir = ns.todir
     to_zip = ns.tozip
 
-    if from_dir:
-        path_list = get_special_paths(from_dir)
-    elif to_dir:
+    if to_dir:
         path_list = get_special_paths(from_dir).split('\n')
         copy_to(path_list, to_dir)
     elif to_zip:
         path_list = get_special_paths(from_dir).split('\n')
         zip_to(path_list, to_zip)
+    else:
+        get_special_paths(from_dir)
     
 
 
